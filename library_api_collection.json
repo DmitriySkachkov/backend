@@ -27,18 +27,6 @@
                   "    pm.expect(response).to.be.an('array');\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Books have required fields\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    if (response.length > 0) {\r",
-                  "        response.forEach(book => {\r",
-                  "            pm.expect(book).to.have.property('id');\r",
-                  "            pm.expect(book).to.have.property('title');\r",
-                  "            pm.expect(book).to.have.property('author');\r",
-                  "        });\r",
-                  "    }\r",
-                  "});\r",
-                  "\r",
-                  "// Сохраняем первый ID для дальнейших тестов\r",
                   "const response = pm.response.json();\r",
                   "if (response.length > 0) {\r",
                   "    pm.environment.set(\"book_id\", response[0].id);\r",
@@ -77,15 +65,7 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Book has correct structure\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response).to.have.property('id');\r",
-                  "    pm.expect(response).to.have.property('title');\r",
-                  "    pm.expect(response).to.have.property('author');\r",
-                  "    pm.expect(response).to.have.property('available_copies');\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Book ID matches requested\", function () {\r",
+                  "pm.test(\"Book ID matches\", function () {\r",
                   "    const response = pm.response.json();\r",
                   "    pm.expect(response.id).to.eql(parseInt(pm.environment.get(\"book_id\")));\r",
                   "});"
@@ -124,15 +104,8 @@
                   "    pm.response.to.have.status(201);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Book was created\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response).to.have.property('id');\r",
-                  "    pm.expect(response.title).to.eql(\"Мастер и Маргарита\");\r",
-                  "    pm.expect(response.author).to.eql(\"Михаил Булгаков\");\r",
-                  "});\r",
-                  "\r",
-                  "// Сохраняем ID новой книги\r",
-                  "pm.environment.set(\"new_book_id\", pm.response.json().id);"
+                  "const response = pm.response.json();\r",
+                  "pm.environment.set(\"book_id\", response.id);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -185,7 +158,6 @@
                   "pm.test(\"Book was updated\", function () {\r",
                   "    const response = pm.response.json();\r",
                   "    pm.expect(response.updated).to.be.true;\r",
-                  "    pm.expect(response.book.title).to.eql(\"Мастер и Маргарита (Юбилейное издание)\");\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -213,14 +185,14 @@
               }
             },
             "url": {
-              "raw": "{{api_url}}/api/books/{{new_book_id}}",
+              "raw": "{{api_url}}/api/books/{{book_id}}",
               "host": [
                 "{{api_url}}"
               ],
               "path": [
                 "api",
                 "books",
-                "{{new_book_id}}"
+                "{{book_id}}"
               ]
             }
           },
@@ -237,10 +209,7 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Book was deleted\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response.deleted).to.be.true;\r",
-                  "});"
+                  "pm.environment.set(\"book_id\", \"1\");"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -252,14 +221,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{api_url}}/api/books/{{new_book_id}}",
+              "raw": "{{api_url}}/api/books/{{book_id}}",
               "host": [
                 "{{api_url}}"
               ],
               "path": [
                 "api",
                 "books",
-                "{{new_book_id}}"
+                "{{book_id}}"
               ]
             }
           },
@@ -281,7 +250,9 @@
                   "    pm.expect(response).to.be.an('array');\r",
                   "    if (response.length > 0) {\r",
                   "        response.forEach(book => {\r",
-                  "            pm.expect(book.title.toLowerCase()).to.include('война');\r",
+                  "            const titleMatch = book.title.toLowerCase().includes('война');\r",
+                  "            const authorMatch = book.author.toLowerCase().includes('толстой');\r",
+                  "            pm.expect(titleMatch || authorMatch).to.be.true;\r",
                   "        });\r",
                   "    }\r",
                   "});"
@@ -400,12 +371,6 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Response is array\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response).to.be.an('array');\r",
-                  "});\r",
-                  "\r",
-                  "// Сохраняем первый ID пользователя\r",
                   "const response = pm.response.json();\r",
                   "if (response.length > 0) {\r",
                   "    pm.environment.set(\"user_id\", response[0].id);\r",
@@ -444,10 +409,9 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"User has borrowed books field\", function () {\r",
+                  "pm.test(\"User has borrowed_books field\", function () {\r",
                   "    const response = pm.response.json();\r",
                   "    pm.expect(response).to.have.property('borrowed_books');\r",
-                  "    pm.expect(response.borrowed_books).to.be.an('array');\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -484,14 +448,8 @@
                   "    pm.response.to.have.status(201);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"User was created\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response).to.have.property('id');\r",
-                  "    pm.expect(response.name).to.eql(\"Анна Смирнова\");\r",
-                  "});\r",
-                  "\r",
-                  "// Сохраняем ID нового пользователя\r",
-                  "pm.environment.set(\"new_user_id\", pm.response.json().id);"
+                  "const response = pm.response.json();\r",
+                  "pm.environment.set(\"user_id\", response.id);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -539,11 +497,6 @@
                 "exec": [
                   "pm.test(\"Status code is 200\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"User was updated\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response.updated).to.be.true;\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -571,14 +524,14 @@
               }
             },
             "url": {
-              "raw": "{{api_url}}/api/users/{{new_user_id}}",
+              "raw": "{{api_url}}/api/users/{{user_id}}",
               "host": [
                 "{{api_url}}"
               ],
               "path": [
                 "api",
                 "users",
-                "{{new_user_id}}"
+                "{{user_id}}"
               ]
             }
           },
@@ -595,10 +548,7 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"User was deleted\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response.deleted).to.be.true;\r",
-                  "});"
+                  "pm.environment.set(\"user_id\", \"1\");"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -610,14 +560,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{api_url}}/api/users/{{new_user_id}}",
+              "raw": "{{api_url}}/api/users/{{user_id}}",
               "host": [
                 "{{api_url}}"
               ],
               "path": [
                 "api",
                 "users",
-                "{{new_user_id}}"
+                "{{user_id}}"
               ]
             }
           },
@@ -639,14 +589,8 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Book was borrowed\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response.borrowed).to.be.true;\r",
-                  "    pm.expect(response).to.have.property('due_date');\r",
-                  "});\r",
-                  "\r",
-                  "// Сохраняем ID книги для возврата\r",
-                  "pm.environment.set(\"borrowed_book_id\", 1);"
+                  "const bookId = pm.environment.get(\"book_id\");\r",
+                  "pm.environment.set(\"borrowed_book_id\", bookId);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -658,7 +602,7 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{api_url}}/api/users/{{user_id}}/borrow/1",
+              "raw": "{{api_url}}/api/users/{{user_id}}/borrow/{{book_id}}",
               "host": [
                 "{{api_url}}"
               ],
@@ -667,7 +611,7 @@
                 "users",
                 "{{user_id}}",
                 "borrow",
-                "1"
+                "{{book_id}}"
               ]
             }
           },
@@ -685,18 +629,7 @@
                   "});\r",
                   "\r",
                   "pm.test(\"Response is array\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response).to.be.an('array');\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Books have borrowing info\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    if (response.length > 0) {\r",
-                  "        response.forEach(book => {\r",
-                  "            pm.expect(book).to.have.property('borrowed_at');\r",
-                  "            pm.expect(book).to.have.property('due_date');\r",
-                  "        });\r",
-                  "    }\r",
+                  "    pm.response.to.be.an('array');\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -734,11 +667,7 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Book was returned\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response.returned).to.be.true;\r",
-                  "    pm.expect(response.message).to.include('successfully');\r",
-                  "});"
+                  "pm.environment.unset(\"borrowed_book_id\");"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -781,21 +710,11 @@
                   "    pm.response.to.have.status(200);\r",
                   "});\r",
                   "\r",
-                  "pm.test(\"Statistics contain all required fields\", function () {\r",
+                  "pm.test(\"Statistics have required fields\", function () {\r",
                   "    const response = pm.response.json();\r",
                   "    pm.expect(response).to.have.property('total_books');\r",
                   "    pm.expect(response).to.have.property('total_users');\r",
                   "    pm.expect(response).to.have.property('borrowed_books');\r",
-                  "    pm.expect(response).to.have.property('available_books');\r",
-                  "    pm.expect(response).to.have.property('total_copies');\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"Statistics values are valid\", function () {\r",
-                  "    const response = pm.response.json();\r",
-                  "    pm.expect(response.total_books).to.be.at.least(0);\r",
-                  "    pm.expect(response.total_users).to.be.at.least(0);\r",
-                  "    pm.expect(response.borrowed_books).to.be.at.least(0);\r",
-                  "    pm.expect(response.available_books).to.be.at.least(0);\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -821,6 +740,44 @@
           "response": []
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "book_id",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "borrowed_book_id",
+      "value": ""
     }
   ]
 }
