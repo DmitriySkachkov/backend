@@ -768,6 +768,10 @@
   ],
   "variable": [
     {
+      "key": "api_url",
+      "value": ""
+    },
+    {
       "key": "book_id",
       "value": ""
     },
