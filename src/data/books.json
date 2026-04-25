@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "Война и мир",
+    "author": "Лев Толстой",
+    "year": 1869,
+    "genre": "Роман",
+    "total_copies": 5,
+    "available_copies": 3
+  },
+  {
+    "id": 2,
+    "title": "Преступление и наказание",
+    "author": "Фёдор Достоевский",
+    "year": 1866,
+    "genre": "Роман",
+    "total_copies": 3,
+    "available_copies": 2
+  },
+  {
+    "id": 3,
+    "title": "Мастер и Маргарита",
+    "author": "Михаил Булгаков",
+    "year": 1967,
+    "genre": "Роман",
+    "total_copies": 4,
+    "available_copies": 4
+  }
+]
